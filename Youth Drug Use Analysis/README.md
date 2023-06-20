@@ -22,7 +22,7 @@ Regression involves predicting the age of first use for alcohol.
 We will demonstrate the use of decision trees, including ensemble methods, for each of these problem types.
 
 ## Data Cleaning
-Used the code provided in the YouthParse file to clean up the initial dataset and create a new dataset called 'youth_data' that includes only the substance, demographic, and youth experience columns. 
+Used the code provided in the youthParse.ipynb file to clean up the initial dataset and create a new dataset called 'youth_data' that includes only the substance, demographic, and youth experience columns. 
 Saved this new dataset as a CSV file for future use.
 To further clean the data, removed all rows with black or unknown values in the demographic columns, as these values do not provide any useful information. 
 Additionally, dropped all null values from the youth experience columns, as we need complete data in these columns to analyze youth experiences.
@@ -31,7 +31,7 @@ health is affected by drinking alcohol from an early age. And also, age of alcoh
 increases with increase in Income.
 
 # Methodology
-Refer to the drug_analysis.ipynb file for the methodology and results.
+Refer to the youthDrugUseAnalysis.ipynb file for the methodology and results.
 
 # CONCLUSIONS
 The findings of the study suggest that boosting is the most accurate model for predicting whether an individual has ever used alcohol or not, with an accuracy of 82.33%. The important predictors for this model were YFLMJMO (how youth feel about their peers using marijuana
