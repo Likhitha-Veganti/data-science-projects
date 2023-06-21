@@ -9,10 +9,10 @@ Building prediction models using decision trees is a common machine learning tec
 In this study, we will develop predictive models for youth drug usage using decision trees, including ensemble approaches.
 
 ## Dataset Description
-The data used in this project is downloaded from National Survey on Drug Use and Health.
+The data used in this project is downloaded from National Survey on Drug Use and Health. https://www.datafiles.samhsa.gov/dataset/national-survey-drug-use-and-health-2020-nsduh-2020-ds0001
 The dataset contains complete information on demographics of the respondents, youth experiences, drug use, and more variables. 
 The Substance Abuse and Mental Health Services Administration (SAMHSA) conducts the survey every year to estimate the prevalence, patterns, and impacts of drug use in the country. 
-The dataset contains 1,649 variables and 55,228 observations, including data on demographics, youth experience variables and substance variables.
+The dataset contains 2000 variables and 30,000 observations, including data on demographics, youth experience variables and substance variables.
 
 ## Problem Types
 In this report, we will use decision trees to investigate three different problem types related to youth drug use: binary classification, multi-class classification, and regression. 
