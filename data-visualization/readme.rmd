@@ -24,6 +24,7 @@ The investigation in this analysis involves healthy life expectancy of various c
 Introducing the Healthy Life Expectancy Dashboard, a captivating and visually immersive journey through the factors influencing well-being, with a special focus on each of our world's diverse continents. Weaving together three compelling narratives, this dashboard unravels the profound disparities in happiness and health across the globe, offering insights that resonate with people on a personal level.
 
 ### Plot 1: Healthy Life Expectancy Distribution (highlighting Continent's Average Life Expectancy)
+
 The journey begins with Plot 1, which presents a clear visualization of the distribution of healthy life expectancy values. Used a bar chart, making it easy for viewers to grasp the distribution of this quantitative variable. On exploring the bars, we can notice that the majority of countries fall within the range of 0.6 to 0.8 in terms of healthy life expectancy. 
 These bars are thoughtfully colored in a neutral light grey, allowing the key data points to take center stage. The overall average healthy life expectancy is prominently marked with a vertical line, and for those seeking clarity, text label is added, making it easy to compare each continent with overall average. Additionally, when you select a specific continent, its average life expectancy is accentuated by a distinct blue vertical line, maintaining a consistent visual language.
 
