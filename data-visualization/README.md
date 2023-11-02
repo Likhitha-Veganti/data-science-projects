@@ -5,7 +5,7 @@ The World Happiness Report is a comprehensive survey that assesses the state of 
 
 The dataset includes several key variables such as:
 
-Overall rank: Overall rank of each country or region.
+Overall rank: Overall rank of each country or region.<br>
 country or region: Country or Region of the world.
 Continent: Continent of the country.
 Score: The happiness score measured for that country or region.
