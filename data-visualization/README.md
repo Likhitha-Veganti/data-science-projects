@@ -6,15 +6,15 @@ The World Happiness Report is a comprehensive survey that assesses the state of 
 The dataset includes several key variables such as:
 
 Overall rank: Overall rank of each country or region.<br>
-country or region: Country or Region of the world.
-Continent: Continent of the country.
-Score: The happiness score measured for that country or region.
-GDP per capita of that country.
-Social support provided in that country.
-Healthy life expectancy of that country.
-Freedom to make life choices in that country.
-Generosity values of that country
-Perceptions of corruption in that country.
+country or region: Country or Region of the world.<br>
+Continent: Continent of the country.<br>
+Score: The happiness score measured for that country or region.<br>
+GDP per capita of that country.<br>
+Social support provided in that country.<br>
+Healthy life expectancy of that country.<br>
+Freedom to make life choices in that country.<br>
+Generosity values of that country.<br>
+Perceptions of corruption in that country.<br>
 
 The investigation in this analysis involves healthy life expectancy of various continents and possible factors that are influencing the life expectancy.
 
