@@ -5,7 +5,7 @@ The game keeps track of the number of rounds won by the player and the computer,
 ## Instructions
 
 ### Run the Program:
-Execute the Python script rock_paper_scissors.py to start the game.
+Execute the Python script rock_paper_scissors.ipynb to start the game.
 
 ### Specify Number of Rounds:
 The program will prompt the user to enter the number of rounds to be played. Enter a positive integer and press Enter.
