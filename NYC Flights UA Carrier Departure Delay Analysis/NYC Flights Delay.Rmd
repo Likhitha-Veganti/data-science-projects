@@ -1,0 +1,608 @@
+---
+title: "Project1"
+author: "likhitha"
+date: "2022-10-23"
+output:
+  html_document: default
+  word_document: default
+---
+
+# Import the required libraries
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(nycflights13)
+```
+
+```{r}
+glimpse(flights)
+```
+
+Create a new dataset named 'myflights' in order to filter the carrier as 'UA'.
+
+```{r}
+myflights <- flights %>% 
+  filter(carrier == 'UA') %>% 
+  mutate(
+    late = dep_delay>0,
+    very_late = dep_delay>30
+  )
+glimpse(myflights)
+```
+```{r}
+glimpse(weather)
+```
+Appending both the data sets ‘myflights’ and ‘weather’ into a new data set named ‘data’ using inner join.
+
+```{r}
+data <- myflights %>% inner_join(weather, by = c('origin','year','month','day','hour','time_hour'))
+glimpse(data)
+```
+
+
+
+# Departure Delay Vs Time of day
+
+Creating a temporary dataset named 'data1' that stores average departure delay grouped by hour.
+
+```{r}
+data1 <- data %>% group_by(time_of_day = hour) %>% summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+data1
+# Plotting a scatter plot between time and average departure delay.
+ggplot(data1, aes(y = avg_dep_delay, x = time_of_day))+
+  geom_point()
+```
+
+
+```{r}
+observed <- mean(data$dep_delay[data$hour > 16 ], na.rm = TRUE) - mean(data$dep_delay[data$hour <= 16], na.rm = TRUE)
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+sample.size = nrow(data)
+
+#group.1.size = the number of observations in the first group
+day = data %>% filter(hour > 16)
+group.1.size = nrow(day)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram(bins = 60, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat("The difference is significant.\nThe departure delays at evening times of a day are greater than departure delays at morning times of a day.")
+```
+
+
+#Departure Delay Vs Time of year
+
+Create a temporary dataset 'data1' that contains average dep_delays group_by month.
+
+```{r}
+data1 <- data %>% group_by(month) %>% summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+data1
+ggplot(data1, aes(x = month, y = avg_dep_delay))+
+  geom_line() + scale_x_discrete(limits = c("1","2","3","4","5","6","7","8","9","10","11","12"))
+```
+## Summer Spring
+
+```{r}
+observed <-  mean(data$dep_delay[data$month >= 6 & data$month <= 8], na.rm = TRUE) - mean(data$dep_delay[data$month >=3 & data$month <=5], na.rm = TRUE) 
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+summer_spring = data %>% filter(month >=3 & month <=8)
+sample.size = nrow(summer_spring)
+
+#group.1.size = the number of observations in the first group
+summer = data %>% filter(month >= 6 & month <= 8)
+group.1.size = nrow(summer)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram(bins = 60, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat("The difference is significant. The departure delays in Summer are greater than Spring.")
+```
+
+
+## Summer Autumn
+
+```{r}
+observed <-  mean(data$dep_delay[data$month >= 6 & data$month <= 8], na.rm = TRUE) - mean(data$dep_delay[data$month >=9 & data$month <=11], na.rm = TRUE) 
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+summer_autumn = data %>% filter(month >= 6 & month <=11)
+sample.size = nrow(summer_autumn)
+
+#group.1.size = the number of observations in the first group
+summer = data %>% filter(month >= 6 & month <= 8)
+group.1.size = nrow(summer)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram(bins = 60, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat('The difference is significant. The departure delays in summer are greater than departure delays in autumn.')
+```
+
+## Summer Winter
+
+```{r}
+observed <-  mean(data$dep_delay[data$month >= 6 & data$month <= 8], na.rm = TRUE) - mean(data$dep_delay[data$month >11 | data$month <=2], na.rm = TRUE) 
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+summer_winter = data %>% filter((month >= 6 & month <=8) | (month >11 | month <=2))
+sample.size = nrow(summer_winter)
+
+#group.1.size = the number of observations in the first group
+summer = data %>% filter(month >= 6 & month <= 8)
+group.1.size = nrow(summer)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram(bins = 60, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat('The difference is significant. The departure delays in summer are greater than departure delays in winter.')
+```
+
+
+## Spring Autumn
+
+```{r}
+observed <- mean(data$dep_delay[data$month >=3 & data$month <=5], na.rm = TRUE) - mean(data$dep_delay[data$month >= 9 & data$month <= 11], na.rm = TRUE)
+observed
+# Spring - Autumn
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+spring_autumn = data %>% filter((month >=9 & month <=11) | (month >=3 & month<=5))
+sample.size = nrow(spring_autumn)
+
+#group.1.size = the number of observations in the first group
+spring = data %>% filter(month >= 3 & month <= 5)
+group.1.size = nrow(spring)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram(bins = 60, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat('The difference is significant. The departure delays in spring are greater than autumn.')
+```
+
+
+## Spring - Winter
+
+```{r}
+observed <- mean(data$dep_delay[data$month >=3 & data$month <=5], na.rm = TRUE) - mean(data$dep_delay[data$month >11 | data$month <= 2], na.rm = TRUE)
+observed
+# Spring - Winter
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+spring_winter = data %>% filter((month > 11 | month <= 2) | (month >=3 & month<=5))
+sample.size = nrow(spring_winter)
+
+#group.1.size = the number of observations in the first group
+spring = data %>% filter(month >= 3 & month <= 5)
+group.1.size = nrow(spring)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram(color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+
+```{r}
+cat('The difference is significant. The departure delays in spring are greater than winter.')
+```
+
+## Winter Autumn
+
+```{r}
+observed <- mean(data$dep_delay[data$month >11 | data$month <= 2], na.rm = TRUE) - mean(data$dep_delay[data$month >=9 & data$month <=11], na.rm = TRUE) 
+observed
+# Winter - Autumn
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+winter_autumn = data %>% filter((month > 11 | month <= 2) | (month >=9 & month<=11))
+sample.size = nrow(winter_autumn)
+
+#group.1.size = the number of observations in the first group
+winter = data %>% filter(month > 11 | month <= 2)
+group.1.size = nrow(winter)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram(color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+
+```{r}
+cat('The difference is significant. The departure delays in winter are greater than autumn.')
+```
+
+
+# Departure Delay Vs Temperature
+
+Create a temporary dataset,'data1' that contains average departure delays grouped by temp.
+
+```{r}
+data1 <- data %>% mutate(temp = round(temp))
+data1 <- data1 %>% group_by(temp) %>% summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+data1
+ggplot(data1, aes(x = temp, y = avg_dep_delay))+
+  geom_line()
+```
+
+
+
+```{r}
+observed <- mean(data$dep_delay[data$temp > 50 ], na.rm = TRUE) - mean(data$dep_delay[data$temp <= 50], na.rm = TRUE)
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+sample.size = nrow(data)
+
+#group.1.size = the number of observations in the first group
+temp1 = data %>% filter(temp > 50)
+group.1.size = nrow(temp1)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram( bins = 30, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat('The difference is significance. The departure delays with temp>50 are greater than temp<=50.')
+```
+
+
+# Departure Delay Vs Wind speed
+
+Create a temporary dataset, data1 that contains the average departure delay group by wind_speed.
+
+```{r}
+data1 <- data %>% group_by(wind_speed = round(wind_speed)) %>% summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+data1
+ggplot(data1, aes(x = wind_speed, y = avg_dep_delay))+
+  geom_line()
+```
+
+```{r}
+observed <- mean(data$dep_delay[data$wind_speed > 20 ], na.rm = TRUE) - mean(data$dep_delay[data$wind_speed <= 20], na.rm = TRUE)
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+sample.size = nrow(data)
+
+#group.1.size = the number of observations in the first group
+ws = data %>% filter(wind_speed > 20)
+group.1.size = nrow(ws)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram( bins = 30, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat('There is no significant difference. The departure delay for wind speed > 20 is equal to wind speed <=20.')
+```
+
+
+## Precipitation
+
+Create a temporary dataset, data1 that contains average departure delay group by precip.
+
+```{r}
+data1 <- data %>% group_by(precip) %>% summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+data1
+ggplot(data1, aes(x = precip, y = avg_dep_delay))+
+  geom_point()
+```
+
+
+
+```{r}
+observed <- mean(data$dep_delay[data$precip > 0.6 ], na.rm = TRUE) - mean(data$dep_delay[data$precip <= 0.6], na.rm = TRUE)
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+sample.size = nrow(data)
+
+#group.1.size = the number of observations in the first group
+pre = data %>% filter(precip > 0.6)
+group.1.size = nrow(pre)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram( bins = 30, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat("The difference is significant. The departure delays with precip > 0.6 are greater than departure delays with precip <= 0.6.")
+```
+
+
+## Visibility
+
+Create a temporary dataset, data1 that contains the average departure delay group by visib.
+
+```{r}
+data1 <- data %>% group_by(visib) %>% summarize(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+data1
+ggplot(data1, aes(x = visib, y = avg_dep_delay))+
+  geom_point()
+```
+```{r}
+observed <- mean(data$dep_delay[data$visib <= 2.5 ], na.rm = TRUE) - mean(data$dep_delay[data$visib > 2.5], na.rm = TRUE)
+observed
+
+#N = number of simulations we will use
+N <- 10^4-1
+
+set.seed(2000)
+
+#sample.size = the number of observations in our sample
+sample.size = nrow(data)
+
+#group.1.size = the number of observations in the first group
+vis = data %>% filter(visib <= 2.5)
+group.1.size = nrow(vis)
+
+#create a blank vector to store the simulation results
+result <- numeric(N)
+
+#use a for loop to cycle through values of i ranging from 1 to N
+for(i in 1:N)
+{
+
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(data$dep_delay[index], na.rm = TRUE) - mean(data$dep_delay[-index], na.rm = TRUE)
+}
+
+#plot a histogram of the simulated differences
+#add a vertical line at the observed difference
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+geom_histogram( bins = 30, color = 'white') +
+geom_vline(xintercept = observed, color = "red")
+
+
+#Calculate the p-value
+(sum(result >= observed) + 1) / (N + 1)
+```
+```{r}
+cat("The difference is significant. The departure delays with visibility <= 2.5 are greater than visibility > 2.5")
+```
+
