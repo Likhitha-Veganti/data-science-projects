@@ -9,3 +9,5 @@ The implications of the findings are discussed in the context of current societa
 surrounding access to housing, and suggestions are made for policymakers. This project
 demonstrates the potential of SVM in predicting homeownership and provides insights into the
 factors that influence homeownership.
+
+Read Report.pdf for more details.
