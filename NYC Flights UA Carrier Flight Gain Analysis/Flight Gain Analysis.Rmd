@@ -1,0 +1,337 @@
+---
+title: "Project2"
+author: "likhitha"
+date: "2022-11-25"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(nycflights13)
+library(moderndive)
+```
+
+```{r}
+glimpse(flights)
+```
+
+
+```{r}
+myflights <- flights %>% 
+  filter(carrier == 'UA') %>% 
+  mutate(
+    late = dep_delay > 0,
+    very_late = dep_delay>30,
+    gain = dep_delay - arr_delay
+  )
+myflights <- na.omit(myflights)
+glimpse(myflights)
+```
+
+
+#1. 
+
+#### Does the average gain differ for flights that departed late versus those that did not?
+
+```{r}
+data1 <- myflights %>% group_by(late) %>% summarize(avg_gain = mean(gain, na.rm = TRUE))
+data1
+```
+
+
+```{r}
+ggplot(data = myflights, aes(x = late, y = gain))+
+  geom_boxplot()
+```
+
+```{r}
+observed <- mean(myflights$gain[myflights$late == FALSE ], na.rm = TRUE) - mean(myflights$gain[myflights$late == TRUE ], na.rm = TRUE)
+observed
+N <- 10^4-1
+sample.size = nrow(myflights)
+notdelayed = myflights %>% filter(late == FALSE)
+group.1.size = nrow(notdelayed)
+
+result1 <- numeric(N)
+
+for(i in 1:N)
+{
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result1[i] = mean(myflights$gain[index],na.rm = TRUE) - mean(myflights$gain[-index],na.rm = TRUE)
+}
+
+ggplot(data=tibble(result1), mapping = aes(x=result1)) + 
+  geom_histogram(color = 'white') +
+  geom_vline(xintercept = observed, color = "red")
+
+#Calculate the p-value
+(sum(result1 >= observed) + 1) / (N + 1)
+
+```
+
+```{r}
+t.test(gain~late,data=myflights, alternative = 'greater') 
+```
+
+#### What about for flights that departed more than 30 minutes late?
+
+```{r}
+data1 <- myflights %>% group_by(very_late) %>% summarize(avg_gain = mean(gain, na.rm = TRUE))
+data1
+```
+
+```{r}
+ggplot(data = myflights, aes(x = very_late, y = gain))+
+  geom_boxplot()
+```
+
+```{r}
+observed <- mean(myflights$gain[myflights$very_late == FALSE ], na.rm = TRUE) - mean(myflights$gain[myflights$very_late == TRUE ], na.rm = TRUE)
+observed
+N <- 10^4-1
+sample.size = nrow(myflights)
+notdelayed30 = myflights %>% filter(very_late == FALSE)
+group.1.size = nrow(notdelayed30)
+
+result2 <- numeric(N)
+
+for(i in 1:N)
+{
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result2[i] = mean(myflights$gain[index],na.rm = TRUE) - mean(myflights$gain[-index],na.rm = TRUE)
+}
+
+ggplot(data=tibble(result2), mapping = aes(x=result2)) + 
+  geom_histogram(color = 'white') +
+  geom_vline(xintercept = observed, color = "red")
+
+#Calculate the p-value
+(sum(result2 >= observed) + 1) / (N + 1)
+```
+
+
+```{r}
+t.test(gain~very_late,data=myflights, alternative = "greater") 
+```
+
+#2. 
+
+#### What are the five most common destination airports for United Airlines flights from New York City?
+
+```{r}
+dest_airports <- myflights %>% group_by(dest) %>% count()
+dest_airports <- arrange(dest_airports,desc(n))
+glimpse(dest_airports)
+```
+
+
+```{r}
+cat("The five most destination airports from nyc are : IAH, ORD, SFO, LAX, DEN.")
+```
+```{r}
+most_common_data <- myflights %>% filter(dest %in% dest_airports[1:5,]$dest)
+most_common_data %>% group_by(dest) %>% count()
+```
+
+
+#### Describe the distribution and the average gain for each of these five airports.
+
+```{r}
+ggplot(data = most_common_data, aes(x = gain, y = dest))+
+  geom_boxplot()
+```
+
+```{r}
+data1 <- most_common_data %>% group_by(dest) %>% summarize(average_gain = mean(gain, na.rm = TRUE))
+data1
+```
+
+
+```{r}
+ggplot(data = data1, aes(x = dest, y = average_gain))+
+  geom_point()
+```
+
+
+```{r}
+ggplot(data = most_common_data %>% filter(dest == 'ORD') , aes(x = gain))+
+  geom_histogram(color = 'white', bins = 50)
+```
+```{r}
+cat('The distribution is normal distribution and looks left skewed.')
+```
+```{r}
+ggplot(data = most_common_data %>% filter(dest == 'IAH') , aes(x = gain))+
+  geom_histogram(color = 'white', bins = 50)
+```
+```{r}
+cat('The distribution is normal and lightly left skewed.')
+```
+```{r}
+ggplot(data = most_common_data %>% filter(dest == 'SFO') , aes(x = gain))+
+  geom_histogram(color = 'white', bins = 50)
+```
+```{r}
+cat('The distribution looks normal and lightly left-skewed.')
+```
+```{r}
+ggplot(data = most_common_data %>% filter(dest == 'LAX') , aes(x = gain))+
+  geom_histogram(color = 'white', bins = 50)
+```
+```{r}
+cat('The distribution is normal and left skewed.')
+```
+```{r}
+ggplot(data = most_common_data %>% filter(dest == 'DEN') , aes(x = gain))+
+  geom_histogram(color = 'white', bins = 50)
+```
+```{r}
+cat('The distribution is normal and left-skewed.')
+```
+
+
+# 3. Another common measure of interest, in addition to total gain, is the gain relative to the duration of the flight.Calculate the gain per hour by dividing the total gain by the duration in hours of each flight. 
+
+```{r}
+myflights <- myflights %>% 
+  mutate(
+    gain_per_hour = gain/hour
+  )
+glimpse(myflights)
+```
+
+#### Does the average gain per hour differ for flights that departed late versus those that did not? 
+
+
+```{r}
+data1 <- myflights %>% group_by(late) %>% summarize(avg_gain = mean(gain_per_hour, na.rm = TRUE))
+data1
+```
+
+
+```{r}
+ggplot(data = myflights, aes(x = late, y = gain_per_hour))+
+  geom_boxplot()
+```
+```{r}
+observed <- mean(myflights$gain_per_hour[myflights$late == FALSE ], na.rm = TRUE) - mean(myflights$gain_per_hour[myflights$late == TRUE ], na.rm = TRUE)
+observed
+N <- 10^4-1
+sample.size = nrow(myflights)
+delayed = myflights %>% filter(late == TRUE)
+group.1.size = nrow(delayed)
+
+result1 <- numeric(N)
+
+for(i in 1:N)
+{
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result1[i] = mean(myflights$gain_per_hour[index],na.rm = TRUE) - mean(myflights$gain_per_hour[-index],na.rm = TRUE)
+}
+
+ggplot(data=tibble(result1), mapping = aes(x=result1)) + 
+  geom_histogram(color = 'white') +
+  geom_vline(xintercept = observed, color = "red")
+
+#Calculate the p-value
+(sum(result1 >= observed) + 1) / (N + 1)
+```
+
+```{r}
+t.test(gain_per_hour~late,data=myflights, alternative = "greater") 
+```
+
+#### What about for flights that departed more than 30 minutes late?
+
+
+```{r}
+data1 <- myflights %>% group_by(very_late) %>% summarize(avg_gain = mean(gain_per_hour, na.rm = TRUE))
+data1
+```
+
+```{r}
+ggplot(data = myflights, aes(x = very_late, y = gain_per_hour))+
+  geom_boxplot()
+```
+
+```{r}
+observed <- mean(myflights$gain_per_hour[myflights$very_late == FALSE ], na.rm = TRUE) - mean(myflights$gain_per_hour[myflights$very_late == TRUE ], na.rm = TRUE)
+observed
+N <- 10^4-1
+sample.size = nrow(myflights)
+delayed30 = myflights %>% filter(very_late == TRUE)
+group.1.size = nrow(delayed30)
+
+result1 <- numeric(N)
+
+for(i in 1:N)
+{
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result1[i] = mean(myflights$gain_per_hour[index],na.rm = TRUE) - mean(myflights$gain_per_hour[-index],na.rm = TRUE)
+}
+
+ggplot(data=tibble(result1), mapping = aes(x=result1)) + 
+  geom_histogram(color = 'white') +
+  geom_vline(xintercept = observed, color = "red")
+
+#Calculate the p-value
+(sum(result1 >= observed) + 1) / (N + 1)
+```
+
+```{r}
+t.test(gain_per_hour~very_late,data=myflights, alternative = "greater") 
+```
+
+#### 4. Does the average gain per hour differ for longer flights versus shorter flights?
+
+```{r}
+m = mean(myflights$air_time, na.rm = TRUE)
+```
+
+```{r}
+cat('Mean of air_time is',m)
+```
+
+```{r}
+data1 <- myflights %>% group_by(air_time <= m) %>% summarize(avg_gain = mean(gain_per_hour, na.rm = TRUE))
+data1
+```
+
+
+```{r}
+ggplot(data = myflights, aes(x = air_time <= m , y = gain_per_hour))+
+  geom_boxplot()
+```
+
+```{r}
+observed <- mean(myflights$gain_per_hour[myflights$air_time <= m], na.rm = TRUE) - mean(myflights$gain_per_hour[myflights$air_time > m], na.rm = TRUE)
+observed
+N <- 10^4-1
+sample.size = nrow(myflights)
+group1 <- myflights %>% filter(air_time<=m)
+group.1.size = nrow(group1)
+result <- numeric(N)
+
+for(i in 1:N)
+{
+  index = sample(sample.size, size=group.1.size, replace = FALSE)
+
+  result[i] = mean(myflights$gain_per_hour[index],na.rm = TRUE) - mean(myflights$gain_per_hour[-index],na.rm = TRUE)
+}
+
+ggplot(data=tibble(result), mapping = aes(x=result)) + 
+  geom_histogram(color = 'white') +
+  geom_vline(xintercept = observed, color = "red")
+
+#Calculate the p-value
+2*(sum(result >= observed) + 1) / (N + 1)
+```
+
+```{r}
+t.test(gain_per_hour~air_time<=m, data=myflights, alternative = "two.sided")
+```
