@@ -1,7 +1,3 @@
-The README for the "Connect-4 Outcome Analysis" project should provide a clear and concise overview of the project, including its objectives, the methods used, the results obtained, and the conclusions drawn. Below is an example of how the README might look.
-
----
-
 # Connect-4 Outcome Analysis Project
 
 ## Abstract
