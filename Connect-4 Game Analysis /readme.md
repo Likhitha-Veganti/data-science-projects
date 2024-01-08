@@ -1,5 +1,4 @@
 # Connect-4 Outcome Analysis Project
-
 ## Abstract
 This project applies various supervised and unsupervised machine learning algorithms to analyze legal game positions in Connect-4. It explores the efficacy of different techniques such as Logistic Regression, Decision Trees, SVMs, Neural Networks, and K-means clustering, aiming to predict outcomes and provide insights into the Connect-4 dataset.
 
