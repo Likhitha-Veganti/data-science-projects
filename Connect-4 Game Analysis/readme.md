@@ -24,6 +24,3 @@ Insights into feature importance, model accuracy, and the visualizations of the 
 
 ## Conclusion
 The project demonstrates the effectiveness of machine learning models like Random Forest and Neural Networks in predicting Connect-4 outcomes. It also highlights the limitations of certain models and clustering techniques in the context of the dataset.
-
-## Requirements
-List of libraries and versions used, e.g., scikit-learn, TensorFlow, Pandas, NumPy, etc.
