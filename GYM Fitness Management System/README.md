@@ -1,6 +1,8 @@
 # GYM FITNESS MANAGEMENT SYSTEM
 It provide a simple and affordable gui application for boutique gym and health club startups.
 
+Run dump.sql to create the database
+
 # Data Base
 One can create the database and import the data by running the dump.sql file in your SQL Workbench.
 
